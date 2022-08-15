@@ -1,0 +1,78 @@
+- name: install nginx
+  apt:
+    name:
+      - 'nginx'
+    state: latest
+
+- name: Delete default nginx site
+  file:
+    path: /etc/nginx/sites-available/default
+    state: absent
+
+- name: Copy nginx config file on server
+  template:
+    src: nginx.conf.j2
+    dest: /etc/nginx/nginx.conf
+  notify: restart_nginx
+
+
+
+# Run nginx with docker
+# ??? can see app servers ???
+
+# - name: stop nginx
+#   service:
+#     name: nginx
+#     state: stopped
+
+# - name: create nginx directory
+#   file: 
+#     path: "/home/nginx"
+#     state: directory
+
+# - name: Copy nginx config file on server
+#   template:
+#     src: nginx.conf.j2
+#     dest: /home/nginx/nginx.conf
+#     owner: root
+#     group: root
+#     mode: 0644
+
+# - name: Create a Nginx Container
+#   community.docker.docker_container:
+#     name: nginx
+#     image: nginx
+#     restart_policy: always
+#     ports: 
+#       - "80:81"
+#     volumes:
+#       - /etc/nginx
+
+# - name: Copy config file from server to containe
+#   shell: docker cp /home/nginx/nginx.conf nginx:/etc/nginx/nginx.conf
+
+
+
+
+
+
+
+# Run a html with nginx (for test its work or not)
+
+# - name: Copy nginx site.conf
+#   template:
+#     src: site.conf.j2
+#     dest: /etc/nginx/sites-enabled/{{ domain }}
+#     owner: root
+#     group: root
+#     mode: '0644'
+#   notify: restart_nginx
+
+# - name: Sync website"
+#   synchronize:
+#     src: index.html
+#     dest: /var/www/{{ domain }}
+#     archive: no
+#     checksum: yes
+#     recursive: yes
+#     delete: yes

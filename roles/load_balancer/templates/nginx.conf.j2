@@ -1,0 +1,26 @@
+http {
+    sendfile on;
+
+    upstream backend {
+        {% for host in groups['apps'] %}
+        server {{ hostvars[host].ansible_host }}:8080;
+        {% endfor %} 
+    }
+ 
+    # This server accepts all traffic to port 80 and passes it to the upstream. 
+    
+    server {
+       listen 80; 
+ 
+       location / {
+           proxy_pass http://backend;
+           proxy_redirect off;
+           proxy_set_header Host $host;
+           proxy_set_header X-Real-IP $remote_addr;
+           proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+           proxy_set_header X-Forwarded-Host $server_name;
+       }
+    }
+}
+
+events {}

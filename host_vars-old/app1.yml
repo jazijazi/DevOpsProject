@@ -1,0 +1,5 @@
+ssh_users: "jazi ubuntu"
+ssh_template_file: sshd_config_ubuntu.j2
+project_name: app
+vassals_dir: /etc/uwsgi/vassals/
+supervisor_conf_dir: /etc/supervisor/conf.d/uwsgi-runner.conf

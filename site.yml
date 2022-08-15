@@ -1,0 +1,42 @@
+---
+
+- hosts: all
+  become: true
+  pre_tasks:
+  - name: install repo cach (CentOS)
+    tags: always
+    dnf:
+      update_cache: yes
+    changed_when: false
+    when: ansible_distribution == "CentOS"
+
+  - name: install repo cach (Ubuntu)
+    tags: always
+    apt:
+      update_cache: yes
+    changed_when: false
+    when: ansible_distribution == "UbuntuZZZZZZZZZZZZZ"
+
+
+- hosts: all
+  become: true
+  roles:
+    - base
+
+
+- hosts: load_balancer
+  become: true
+  roles:
+    - load_balancer
+
+
+- hosts: db_servers
+  become: true
+  roles:
+    - db_servers
+
+
+- hosts: app_servers
+  become: true
+  roles:
+    -  app_servers

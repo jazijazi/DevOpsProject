@@ -1,0 +1,53 @@
+- name: add ssh key for jazi
+  tags: always
+  authorized_key:
+    user: jazi
+    key: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFvoYsV8aDxhFC11pxGqOz0jEPXSsdnXQ8HSRzmd/x7l ansible"
+
+- name: generate ssh config file from ssh template file
+  tags: ssh
+  template:
+    src: "{{ ssh_template_file }}"
+    dest: /etc/ssh/sshd_config
+    owner: root
+    group: root
+    mode: 0644
+  notify: restart_sshd
+
+#Install Docker
+- name: Install required system packages
+  apt:
+    name:
+      - apt-transport-https
+      - ca-certificates
+      - curl
+      - software-properties-common
+      - python3-pip
+      - virtualenv
+      - python3-setuptools
+    state: latest
+    #update_cache: true
+
+- name: Add Docker GPG apt Key
+  apt_key:
+    url: https://download.docker.com/linux/ubuntu/gpg
+    state: present
+
+- name: Add Docker Repository
+  apt_repository:
+    repo: deb https://download.docker.com/linux/ubuntu focal stable
+    state: present
+
+- name: Update apt and install docker-ce
+  apt:
+    name: 
+      - docker-ce
+      - docker-ce-cli
+      - containerd.io
+    state: latest
+    #update_cache: true
+  notify: enable_docker
+
+- name: Install Docker Module for Python
+  pip:
+    name: docker

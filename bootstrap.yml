@@ -1,0 +1,44 @@
+---
+
+- hosts: all
+  become: true
+  tasks:
+
+  - name: install update (CentOS)
+    tags: always
+    dnf:
+      update_only: yes
+      update_cache: yes
+    when: ansible_distribution == "CentOS"
+
+  - name: install updates on Ubuntu servers
+    tags: always
+    apt:
+      upgrade: yes
+      update_cache: yes
+    when: ansible_distribution == "Ubuntu22222222222222"
+
+- hosts: all
+  become: true
+  tasks: 
+
+  - name: create jazi user
+    tags: always
+    user:
+      name: jazi
+      group: root
+  
+  - name: add ssh key for jazi
+    tags: always
+    authorized_key:
+      user: jazi
+      key: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFvoYsV8aDxhFC11pxGqOz0jEPXSsdnXQ8HSRzmd/x7l ansible"
+  
+  - name: add sudoers file for jazi
+    tags: always
+    copy:
+      src: sudoer_jazi
+      dest: /etc/sudoers.d/jazi
+      owner: root
+      mode: 0440
+

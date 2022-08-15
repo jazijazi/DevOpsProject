@@ -1,0 +1,9 @@
+- name: restart_sshd
+  service: 
+    name: sshd
+    state: restarted 
+
+- name: enable_docker
+  service:
+    name: docker 
+    state: started

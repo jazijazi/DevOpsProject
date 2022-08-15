@@ -1,0 +1,35 @@
+upstream {{project_name}} {
+    server unix:///home/{{project_name}}/{{project_name}}.sock;
+}
+
+server {
+    listen       8080;
+
+    charset     utf-8;
+    client_max_body_size 75M;
+    error_log /home/app/logs/error.log error;
+
+    location / {
+        uwsgi_pass  {{project_name}};
+        include     uwsgi_params;
+    }
+
+    location /static {
+        autoindex on;
+        alias /app/ansibleapp/static/;
+        expires 365d;
+    }
+
+    location /media {
+        autoindex on;
+        alias /app/ansibleapp/static/;
+        expires 365d;
+    }
+
+    location /player/private/media/ {
+       alias /app/ansibleapp/static/;
+    }
+
+location /robots.txt { root /app/ansibleapp/static/; }
+location /favicon.ico { root /app/ansibleapp/static/; }
+}

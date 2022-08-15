@@ -1,0 +1,14 @@
+- name: Create a Postgres Container
+  community.docker.docker_container:
+    name: postgres
+    image: postgres
+    restart_policy: always
+    published_ports: "5432:5432"
+    env:
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_DB: app
+    volumes:
+      - /var/lib/postgresql/data
+
+

@@ -1,0 +1,60 @@
+- name: "Copy app to server"
+  become: true
+  copy:
+    src: ../../../ansibleapp
+    dest: /app
+    owner: root
+    group: root
+    mode: 0644
+
+- name: Pip install req
+  command: pip install -r /app/ansibleapp/requirements.txt
+
+- name: Collect static
+  command: python3 /app/ansibleapp/manage.py collectstatic --noinput
+
+- name: install uwsgi
+  pip:
+    name: uwsgi
+
+- name: Install supervisor
+  apt: 
+    name: supervisor
+    state: present
+
+- name: Create UWSGI vassals directory
+  file:
+    path: "{{vassals_dir}}"
+    state: directory
+
+- name: setup uwsgi in supervisor
+  template: 
+    src: uwsgi_server.j2
+    dest: "{{ supervisor_conf_dir }}"
+
+- name: update supervisor
+  supervisorctl:
+    name: uwsgi-runner
+    state: restarted
+
+- name: setup project uwsgi configuration file
+  template:
+    src: uwsgi.j2 
+    dest: /{{project_name}}/{{project_name}}_uwsgi.ini
+
+- name: create a symlink of uwsgi in vassals
+  file: 
+    src: /{{project_name}}/{{project_name}}_uwsgi.ini 
+    dest: /etc/uwsgi/vassals/{{project_name}}_uwsgi.ini
+    state: link
+
+- name: touch the symlink file
+  file: 
+    path: /etc/uwsgi/vassals/{{project_name}}_uwsgi.ini
+    state: touch
+
+- include_tasks: install_nginx.yml
+
+# - name: run project
+#   become: true
+#   command: python3 /app/ansibleapp/manage.py runserver 0.0.0.0:8000

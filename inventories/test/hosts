@@ -1,0 +1,18 @@
+[app_servers]
+app1 ansible_host=10.179.250.164
+
+[load_balancer]
+lb1 ansible_host=10.179.250.27
+
+[db_servers]
+db1 ansible_host=10.179.250.178
+
+
+[apps:children]
+app_servers
+
+[databases:children]
+db_servers
+
+[loadbalancers:children]
+load_balancer
